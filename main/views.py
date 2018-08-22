@@ -3,8 +3,11 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework import status
 from django.db import connection
+from main.models import Menu
+from main.serializer import MenuSerializer
 
 # UTILS
 def dictfetchall(cursor):
@@ -14,9 +17,15 @@ def dictfetchall(cursor):
        for row in cursor.fetchall()
 	]
 
+# Catalogos serializados
+
+class MenuViewSet(viewsets.ModelViewSet):
+	queryset = Menu.objects.all()
+	serializer_class = MenuSerializer
+
 # Raiz redirige a ADMIN
 def home(request):
-	return HttpResponseRedirect('/admin/main')
+	return HttpResponseRedirect('/admin')
 
 # Clases de REST
 class TotalIngresosEgresosViewSet(APIView):
@@ -60,7 +69,7 @@ class TotalIngresosEgresosViewSet(APIView):
 				GROUP BY nombre, clabe
 			''' % (valorIni, valorFin)
 		else :
-			query = ''' SELECT 'Sin datos' as '%s' FROM dual ''' % condominio	
+			query = ''' SELECT 'Sin datos' as '%s' FROM dual ''' % condominio
 		cursor.execute(query)
 		totales_list = dictfetchall(cursor)
 		response = Response(totales_list, status=status.HTTP_200_OK)
@@ -106,8 +115,8 @@ class CuotasDeptoMesViewSet(APIView):
                               AND sadi_condomino.depto != '0000'
                               AND date_format(fecha,'%%m-%%Y') = '%s'
                               AND deposito > 0)
-                     AND depto != '0000'  
-                     AND condominio.nombre = '%s'     
+                     AND depto != '0000'
+                     AND condominio.nombre = '%s'
                      ORDER BY depto
             ''' % (valor, valor, valor, valor, condominio)
         elif condominio == 'OLIMPO':
@@ -143,8 +152,8 @@ class CuotasDeptoMesViewSet(APIView):
                           AND olimpo_condomino.depto != '000'
                           AND date_format(fecha,'%%m-%%Y') = '%s'
                           AND deposito > 0)
-                 AND depto != '0000'  
-		         AND condominio.nombre = '%s'     
+                 AND depto != '0000'
+		         AND condominio.nombre = '%s'
                  ORDER BY depto
             ''' % (valor, valor, valor, valor, condominio)
         else:

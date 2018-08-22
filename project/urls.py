@@ -2,8 +2,12 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from main import views
+from rest_framework import routers
 
 #from welcome.views import index, health
+
+router = routers.DefaultRouter()
+router.register(r'menu', views.MenuViewSet)
 
 urlpatterns = [
     # Examples:
@@ -18,6 +22,7 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^explorer/', include('explorer.urls')),
+    url(r'^catalogos/', include(router.urls)),
 ]
 
 if settings.DEBUG:

@@ -111,7 +111,7 @@ class Cuota(models.Model):
     fecha = models.DateField(blank=True, null=True)
     fecha_vencimiento = models.DateField(blank=True, null=True)
     tipo_movimiento = models.ForeignKey(TipoMovimiento, limit_choices_to =  Q(id ='27'), default=27)
-    descripcion = models.CharField(max_length=25, blank=True, null=True)
+    descripcion = models.CharField(max_length=250, blank=True, null=True)
     cuenta_contable = models.ForeignKey(CuentaContable, limit_choices_to =  Q(clave_mayor='23'))
     monto = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, default=0)
     aplica = models.BooleanField()
@@ -123,7 +123,18 @@ class Cuota(models.Model):
         managed = True
         db_table = 'cuotas_condominios'
 
+class Menu(models.Model):
+    titulo = models.CharField(max_length=100, blank=True, null=True)
+    link = models.CharField(max_length=100, blank=True, null=True)
+    logo = models.CharField(max_length=10, blank=True, null=True)
+    nombre = models.CharField(max_length=20, blank=True, null=True)
 
+    def __str__(self):
+        return '%s %s' % (self.titulo, self.link)
+
+    class Meta:
+        managed = True
+        db_table = 'menu'
 
 
 #############################################################

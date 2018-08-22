@@ -4,7 +4,7 @@ from django.contrib import admin
 
 from main.models import TipoMovimiento, Situacion, CuentaContable, \
                         Banco, Condominio, Proveedore, \
-                        Periodo, TipoDocumento, Cuota
+                        Periodo, TipoDocumento, Cuota, Menu
 
 class TipoMovimientoAdmin(admin.ModelAdmin):
     list_display = ('descripcion',)
@@ -34,6 +34,10 @@ class PeriodoAdmin(admin.ModelAdmin):
 class CuotaAdmin(admin.ModelAdmin):
     list_display = ('fecha', 'tipo_movimiento', 'descripcion', 'monto', 'cuenta_contable')
 
+class MenuAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'link', 'nombre')
+
+admin.site.register(Menu, MenuAdmin)
 admin.site.register(Cuota, CuotaAdmin)
 admin.site.register(TipoMovimiento, TipoMovimientoAdmin)
 admin.site.register(TipoDocumento, TipoDocumentoAdmin)

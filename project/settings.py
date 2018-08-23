@@ -38,6 +38,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'explorer',
     'rest_framework',
+    'corsheaders',
     'main',
     'c_olimpo',
     'c_sadicarnot',
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 ]
 
@@ -94,7 +96,7 @@ DATABASES = {
         'NAME':   'ciecv31',
         'USER':   'ciecv31',
         'PASSWORD': 'valeria1',
-        'HOST':   'mysql_database',
+        'HOST':   'mysql_ciec',
         'PORT':   '3306'
     }
 }
@@ -132,6 +134,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+CORS_ORIGIN_ALLOW_ALL = True 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

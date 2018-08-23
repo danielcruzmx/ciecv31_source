@@ -20,7 +20,7 @@ def dictfetchall(cursor):
 # Catalogos serializados
 
 class MenuViewSet(viewsets.ModelViewSet):
-	queryset = Menu.objects.all()
+	queryset = Menu.objects.all().order_by('nombre', 'logo')
 	serializer_class = MenuSerializer
 
 # Raiz redirige a ADMIN

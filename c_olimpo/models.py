@@ -1,7 +1,8 @@
 from django.db import models
 from main.models import Banco, Condominio, Proveedore, TipoDocumento, \
                         Situacion, TipoMovimiento, CuentaContable
-from django.db.models import Q                        
+from django.db.models import Q
+from django.utils.safestring import mark_safe
 
 # Create your models here.
 
@@ -22,8 +23,8 @@ class CuentaBanco(models.Model):
     saldo = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     fecha_saldo = models.DateField(blank=True, null=True)
     situacion = models.IntegerField(blank=True, null=True)
-    banco = models.ForeignKey(Banco)
-    condominio = models.ForeignKey(Condominio)
+    banco = models.ForeignKey(Banco, on_delete=models.PROTECT)
+    condominio = models.ForeignKey(Condominio, on_delete=models.PROTECT)
     tipo_cuenta = models.CharField(max_length=20)
 
     def __str__(self):
@@ -32,6 +33,7 @@ class CuentaBanco(models.Model):
     class Meta:
         managed = True
         db_table = 'olimpo_cuenta_banco'
+        verbose_name_plural = "Cuentas bancarias"
 
 class Condomino(models.Model):
     depto = models.CharField(max_length=15, blank=True, null=True)
@@ -42,7 +44,7 @@ class Condomino(models.Model):
     telefono = models.CharField(max_length=30, blank=True, null=True)
     fecha_escrituracion = models.DateField(blank=True, null=True)
     referencia = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    condominio = models.ForeignKey(Condominio, related_name='olimpo_condomino_condominio_id')
+    condominio = models.ForeignKey(Condominio, related_name='olimpo_condomino_condominio_id', on_delete=models.PROTECT)
     estacionamiento = models.ManyToManyField(Estacionamiento, related_name='olimpo_condomino_estacionamiento_id')
 
     def __str__(self):
@@ -51,19 +53,19 @@ class Condomino(models.Model):
     #http://127.0.0.1:8000/admin/c_olimpo/asiento/?condomino__id__exact=9
 
     def cargos(self):
-        return '<a href="/admin/c_olimpo/asiento/?condomino__id__exact=%d">Cargos view</a>' % (self.id)
+        return mark_safe('<a href="/admin/c_olimpo/asiento/?condomino__id__exact=%d">Cargos view</a>' % (self.id))
 
     #http://127.0.0.1:8000/admin/c_olimpo/movimiento/?condomino__id__exact=10
 
     def depositos(self):
-        return '<a href="/admin/c_olimpo/movimiento/?condomino__id__exact=%d">Depositos view</a>' % (self.id)
+        return mark_safe('<a href="/admin/c_olimpo/movimiento/?condomino__id__exact=%d">Depositos view</a>' % (self.id))
 
     def cuotas(self):
-        return '<a href="/explorer/5/download?format=csv&params=depto:\'%s\'">Cuotas *.csv</a>' % (self.depto)
-        
+        return mark_safe('<a href="/explorer/5/download?format=csv&params=depto:\'%s\'">Cuotas *.csv</a>' % (self.depto))
+
 
     cargos.allow_tags = True
-    depositos.allow_tags = True 
+    depositos.allow_tags = True
     cuotas.allow_tags = True
 
     class Meta:
@@ -76,8 +78,8 @@ class Documento(models.Model):
     fecha_expedicion = models.DateField()
     monto_total = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True)
     notas = models.CharField(max_length=45, blank=True, null=True)
-    situacion = models.ForeignKey(Situacion, blank=True, null=True, related_name='olimpo_recibo_situacion_id')
-    tipo_documento = models.ForeignKey(TipoDocumento, blank=True, null=True, related_name='olimpo_recibo_tipodoc_id')
+    situacion = models.ForeignKey(Situacion, blank=True, null=True, related_name='olimpo_recibo_situacion_id', on_delete=models.PROTECT)
+    tipo_documento = models.ForeignKey(TipoDocumento, blank=True, null=True, related_name='olimpo_recibo_tipodoc_id', on_delete=models.PROTECT)
 
     def __str__(self):
         return '%d %s' % (self.folio, self.tipo_documento)
@@ -87,14 +89,14 @@ class Documento(models.Model):
         db_table = 'olimpo_documento'
 
 class Movimiento(models.Model):
-    cuenta_banco = models.ForeignKey(CuentaBanco, related_name='olimpo_movimiento_cuenta_id', default = 1)
+    cuenta_banco = models.ForeignKey(CuentaBanco, related_name='olimpo_movimiento_cuenta_id', default = 1, on_delete=models.PROTECT)
     fecha = models.DateField(blank=True, null=True)
-    tipo_movimiento = models.ForeignKey(TipoMovimiento, blank=True, null=True, related_name='olimpo_movimiento_tipo_movimiento_id')
+    tipo_movimiento = models.ForeignKey(TipoMovimiento, blank=True, null=True, related_name='olimpo_movimiento_tipo_movimiento_id', on_delete=models.PROTECT)
     descripcion = models.CharField(max_length=250, blank=True, null=True)
-    condomino = models.ForeignKey(Condomino, related_name='olimpo_movimiento_condomino_id')
+    condomino = models.ForeignKey(Condomino, related_name='olimpo_movimiento_condomino_id', on_delete=models.PROTECT)
     retiro = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, default=0)
     deposito = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, default=0)
-    documento = models.ForeignKey(Documento, related_name='olimpo_movimiento_documento_id', default = 0)
+    documento = models.ForeignKey(Documento, related_name='olimpo_movimiento_documento_id', default = 0, on_delete=models.PROTECT)
 
     def __str__(self):
         return u'%d %s %d %s' % (self.id, self.fecha.strftime('%d/%m/%Y'), self.deposito, self.descripcion[:15])
@@ -122,14 +124,14 @@ class DetalleMovimiento(models.Model):
 class Asiento(models.Model):
     fecha = models.DateField(blank=True, null=True)
     fecha_vencimiento = models.DateField(blank=True, null=True)
-    tipo_movimiento = models.ForeignKey(TipoMovimiento, blank=True, null=True, related_name='olimpo_auxiliar_tipo_movimiento_id')
+    tipo_movimiento = models.ForeignKey(TipoMovimiento, blank=True, null=True, related_name='olimpo_auxiliar_tipo_movimiento_id', on_delete=models.PROTECT)
     descripcion = models.CharField(max_length=250, blank=True, null=True)
     debe = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, default=0)
     haber = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, default=0)
     saldo = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, default=0)
     cuenta_contable =  models.ForeignKey(CuentaContable, verbose_name = ('Cuenta Contable'), on_delete = models.CASCADE)
-    condomino = models.ForeignKey(Condomino, related_name='olimpo_auxiliar_condomino_id', default=67)
-    a_favor = models.ForeignKey(Proveedore, related_name='olimpo_auxiliar_proveedor_id', default=1)
+    condomino = models.ForeignKey(Condomino, related_name='olimpo_auxiliar_condomino_id', default=67, on_delete=models.PROTECT)
+    a_favor = models.ForeignKey(Proveedore, related_name='olimpo_auxiliar_proveedor_id', default=1, on_delete=models.PROTECT)
 
     def __str__(self):
         return u'%d %s %d %d %s %s' % (self.id, self.fecha.strftime('%d/%m/%Y'), self.debe, self.haber, self.descripcion[:15], self.cuenta_contable)
@@ -137,4 +139,4 @@ class Asiento(models.Model):
     class Meta:
         managed = True
         db_table = 'olimpo_asiento'
-        ordering = ['fecha']        
+        ordering = ['fecha']

@@ -5,6 +5,9 @@ from main import views
 from rest_framework import routers
 
 #from welcome.views import index, health
+admin.site.site_header = "Cuotas, Ingresos y Egresos Condominales"
+admin.site.site_title = "CIEC Admin Portal"
+admin.site.index_title = "Bienvenido al Admin CIEC"
 
 router = routers.DefaultRouter()
 router.register(r'menu', views.MenuViewSet)
@@ -20,13 +23,14 @@ urlpatterns = [
     url(r'^api-rest/cuotasDeptoMes/(?P<condominio>[\w]+)/(?P<mes_anio>(0?[1-9]|1[012])-((19|20)\d\d))/$',
     views.CuotasDeptoMesViewSet.as_view(), name='my_rest_view'),
     url(r'^$', views.home, name='home'),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^explorer/', include('explorer.urls')),
     url(r'^catalogos/', include(router.urls)),
 ]
 
-if settings.DEBUG:
+'''if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+'''

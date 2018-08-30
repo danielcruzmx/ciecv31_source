@@ -12,6 +12,7 @@ class TipoMovimiento(models.Model):
     class Meta:
         managed = True
         db_table = 'tipo_movimiento'
+        verbose_name_plural = "Tipo movimiento"
 
 class TipoDocumento(models.Model):
     descripcion = models.CharField(max_length=25)
@@ -22,6 +23,7 @@ class TipoDocumento(models.Model):
     class Meta:
         managed = True
         db_table = 'tipo_documento'
+        verbose_name_plural = "Tipo documento"
 
 class Situacion(models.Model):
     situacion = models.CharField(max_length=25)
@@ -32,6 +34,7 @@ class Situacion(models.Model):
     class Meta:
         managed = True
         db_table = 'situacion'
+        verbose_name_plural = "Tipo situacion pago"
 
 class CuentaContable(models.Model):
     num_cuenta = models.CharField(max_length=20)
@@ -45,6 +48,7 @@ class CuentaContable(models.Model):
         managed = True
         db_table = 'cuenta_contable'
         ordering = ['num_cuenta']
+        verbose_name_plural = "Cuentas contables"
 
 class Banco(models.Model):
     clave = models.CharField(max_length=3)
@@ -95,7 +99,7 @@ class Proveedore(models.Model):
         db_table = 'proveedore'
 
 class Periodo(models.Model):
-    condominio = models.ForeignKey(Condominio)
+    condominio = models.ForeignKey(Condominio, on_delete=models.PROTECT)
     fecha_inicial = models.DateField(blank=True, null=True)
     fecha_final = models.DateField(blank=True, null=True)
 
@@ -107,12 +111,12 @@ class Periodo(models.Model):
         db_table = 'periodo'
 
 class Cuota(models.Model):
-    condominio = models.ForeignKey(Condominio)
+    condominio = models.ForeignKey(Condominio, on_delete=models.PROTECT)
     fecha = models.DateField(blank=True, null=True)
     fecha_vencimiento = models.DateField(blank=True, null=True)
-    tipo_movimiento = models.ForeignKey(TipoMovimiento, limit_choices_to =  Q(id ='27'), default=27)
+    tipo_movimiento = models.ForeignKey(TipoMovimiento, limit_choices_to =  Q(id ='27'), default=27, on_delete=models.PROTECT)
     descripcion = models.CharField(max_length=250, blank=True, null=True)
-    cuenta_contable = models.ForeignKey(CuentaContable, limit_choices_to =  Q(clave_mayor='23'))
+    cuenta_contable = models.ForeignKey(CuentaContable, limit_choices_to =  Q(clave_mayor='23'), on_delete=models.PROTECT)
     monto = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True, default=0)
     aplica = models.BooleanField()
 

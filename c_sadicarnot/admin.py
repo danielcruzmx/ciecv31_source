@@ -1,11 +1,10 @@
 from django.contrib import admin
-
+from django.utils.safestring import mark_safe
 # Register your models here.
 
 
 from c_sadicarnot.models import Condomino, Estacionamiento, CuentaBanco, \
                             DetalleMovimiento, Documento, Movimiento, Asiento
-
 
 class DetalleMovtoInlineB(admin.TabularInline):
 	model = DetalleMovimiento
@@ -23,29 +22,31 @@ class DetalleMovtoInlineB(admin.TabularInline):
 	#    return	CuentaContable.objects.filter(clave_mayor = '41')
 
 class MovtoAdminB(admin.ModelAdmin):
-	list_display = ('id','fecha','concepto','retiro','deposito','condomino','detalle','conciliacion')
-	list_filter = ('fecha','condomino',)
-	date_hierarchy = 'fecha'
-	readonly_fields = ('detalle',)
-	ordering = ('-fecha',)
-	save_on_top = True 
-	inlines = [DetalleMovtoInlineB]
+    list_display = ('id','fecha','concepto','retiro','deposito','condomino','detalle','conciliacion')
+    list_filter = ('fecha','condomino',)
+    date_hierarchy = 'fecha'
+    readonly_fields = ('detalle',)
+    ordering = ('-fecha',)
+    save_on_top = True
+    inlines = [DetalleMovtoInlineB]
 
-	def concepto(self, request, obj=None, **kwargs):
-		return '%s %s' % (request.tipo_movimiento,request.descripcion)
+    def concepto(self, request, obj=None, **kwargs):
+        return '%s %s' % (request.tipo_movimiento,request.descripcion)
 
-	def detalle(self, request, obj=None, **kwargs):
-		cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
-		total = sum(cantidades)
-		return total 
+    def detalle(self, request, obj=None, **kwargs):
+        cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
+        total = sum(cantidades)
+        return total
 
-	def conciliacion(self, request, obj=None, **kwargs):
-		cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
-		total = sum(cantidades)
-		if(total != (request.retiro + request.deposito)):
-			return 'NO'
-		else:
-			return 'SI'
+    def conciliacion(self, request, obj=None, **kwargs):
+        cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
+        total = sum(cantidades)
+        if(total != (request.retiro + request.deposito)):
+            return False
+        else:
+            return True
+
+    conciliacion.boolean = True
 
 class CuentaBancoAdminB(admin.ModelAdmin):
     list_display = ('banco','clabe','apoderado')
@@ -64,7 +65,7 @@ class AuxiliarAdminAB(admin.ModelAdmin):
 	list_display = ('id','fecha','tipo_movimiento','debe','haber','descripcion', 'cuenta_contable','condomino')
 	list_filter = ('fecha', 'condomino',)
 	date_hierarchy = 'fecha'
-	ordering = ('-fecha',)	
+	ordering = ('-fecha',)
 
 
 admin.site.register(Movimiento, MovtoAdminB)

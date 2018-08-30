@@ -36,20 +36,22 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'explorer',
     'rest_framework',
     'corsheaders',
     'main',
     'c_olimpo',
     'c_sadicarnot',
     'c_sadiochouno',
+    'explorer',
+    #'admin_interface',
+    #'colorfield',
+    #'wpadmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -96,7 +98,7 @@ DATABASES = {
         'NAME':   'ciecv31',
         'USER':   'ciecv31',
         'PASSWORD': 'valeria1',
-        'HOST':   'mysql_ciec',
+        'HOST':   'mysql_database',
         'PORT':   '3306'
     }
 }
@@ -120,6 +122,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+''' REST_FRAMEWORK = {
+    # specifying the renderers
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_csv.renderers.CSVRenderer',
+    ),
+} '''
+
+EXPLORER_CONNECTIONS = { 'default': 'default' }
+EXPLORER_DEFAULT_CONNECTION = 'default'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -134,7 +145,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-CORS_ORIGIN_ALLOW_ALL = True 
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

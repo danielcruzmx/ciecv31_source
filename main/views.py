@@ -8,6 +8,8 @@ from rest_framework import status
 from django.db import connection
 from main.models import Menu
 from main.serializer import MenuSerializer
+#from rest_framework.settings import api_settings
+#from rest_framework_csv import renderers as r
 
 # UTILS
 def dictfetchall(cursor):
@@ -29,6 +31,7 @@ def home(request):
 
 # Clases de REST
 class TotalIngresosEgresosViewSet(APIView):
+	#renderer_classes = (r.CSVRenderer, ) + tuple(api_settings.DEFAULT_RENDERER_CLASSES)
 
 	def get(self, request, *args, **kw):
 		cursor = connection.cursor()

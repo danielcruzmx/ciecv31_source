@@ -23,29 +23,31 @@ class DetalleMovtoInlineBO(admin.TabularInline):
 	#    return	CuentaContable.objects.filter(clave_mayor = '41')
 
 class MovtoAdminBO(admin.ModelAdmin):
-	list_display = ('id','fecha','concepto','retiro','deposito','condomino','detalle','conciliacion')
-	list_filter = ('fecha','condomino',)
-	date_hierarchy = 'fecha'
-	readonly_fields = ('detalle',)
-	ordering = ('-fecha',)
-	save_on_top = True
-	inlines = [DetalleMovtoInlineBO]
+    list_display = ('id','fecha','concepto','retiro','deposito','condomino','detalle','conciliacion')
+    list_filter = ('fecha','condomino',)
+    date_hierarchy = 'fecha'
+    readonly_fields = ('detalle',)
+    ordering = ('-fecha',)
+    save_on_top = True
+    inlines = [DetalleMovtoInlineBO]
 
-	def concepto(self, request, obj=None, **kwargs):
-		return '%s %s' % (request.tipo_movimiento,request.descripcion)
+    def concepto(self, request, obj=None, **kwargs):
+        return '%s %s' % (request.tipo_movimiento,request.descripcion)
 
-	def detalle(self, request, obj=None, **kwargs):
-		cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
-		total = sum(cantidades)
-		return total
+    def detalle(self, request, obj=None, **kwargs):
+        cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
+        total = sum(cantidades)
+        return total
 
-	def conciliacion(self, request, obj=None, **kwargs):
-		cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
-		total = sum(cantidades)
-		if(total != (request.retiro + request.deposito)):
-			return 'NO'
-		else:
-			return 'SI'
+    def conciliacion(self, request, obj=None, **kwargs):
+        cantidades =  DetalleMovimiento.objects.filter(movimiento_id = request.id).values_list('monto', flat = True)
+        total = sum(cantidades)
+        if(total != (request.retiro + request.deposito)):
+            return False
+        else:
+        	return True
+
+    conciliacion.boolean = True
 
 class CuentaBancoAdminBO(admin.ModelAdmin):
     list_display = ('banco','clabe','apoderado')
